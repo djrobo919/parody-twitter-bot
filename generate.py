@@ -1,5 +1,3 @@
-python
-
 from openai import OpenAI
 
 def load_style():

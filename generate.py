@@ -61,6 +61,17 @@ Return ONLY the tweet text.
 
     return "Most problems persist because fixing them would upset someone who benefits from the status quo."
 
+from post_to_x import post_tweet
+
 if __name__ == "__main__":
+    tweet = generate_tweet()
+
     print("=== SAFE GENERATED TWEET ===")
-    print(generate_tweet())
+    print(tweet)
+    print("\nPosting tweet to X...")
+
+    response = post_tweet(tweet)
+
+    print("Tweet posted successfully")
+    print(response)
+

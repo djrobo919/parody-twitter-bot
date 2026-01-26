@@ -2,7 +2,7 @@ name: Daily parody tweet
 
 on:
   schedule:
-    - cron: "0 17 * * *"  # once per day (UTC)
+    - cron: "0 18 * * *"
   workflow_dispatch:
 
 jobs:

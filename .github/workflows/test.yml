@@ -2,7 +2,7 @@ name: Daily parody tweet
 
 on:
   schedule:
-    - cron: "43 18 * * *"
+    - cron: "0 17 * * *"
   workflow_dispatch:
 
 jobs:
@@ -28,5 +28,4 @@ jobs:
           X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
         run: python generate.py
 
-        # Force test run at 18:20 UTC
 

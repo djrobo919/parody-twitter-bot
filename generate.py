@@ -1,6 +1,6 @@
-from openai import OpenAI
+from openai import OpenAI, OpenAIError
 import os
-import re
+import sys
 
 BANNED_WORDS = [
     "kill", "die", "hate", "nazi", "terrorist"
@@ -46,33 +46,29 @@ Write ONE original tweet (max 280 characters).
 Return ONLY the tweet text.
 """
 
-from openai import OpenAI, OpenAIError
+    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
-client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+    for attempt in range(3):
+        try:
+            response = client.responses.create(
+                model="gpt-4.1-mini",
+                input=prompt
+            )
 
-for attempt in range(3):
-    try:
-        response = client.responses.create(
-            model="gpt-4.1-mini",
-            input=prompt
-        )
+            tweet = response.output_text.strip()
 
-        tweet = response.output_text.strip()
+            if is_safe(tweet):
+                return tweet
 
-        if is_safe(tweet):
-            return tweet
+        except OpenAIError as e:
+            print("OpenAI API error, using fallback tweet.")
+            print(e)
+            break  # stop retrying if quota is exceeded
 
-    except OpenAIError as e:
-        print("OpenAI API error, using fallback tweet.")
-        print(e)
-        break  # stop retrying if quota is exceeded
-
-# Always return something
-return "Most problems persist because fixing them would upset someone who benefits from the status quo."
-
+    # Always return something
+    return "Most problems persist because fixing them would upset someone who benefits from the status quo."
 
 from post_to_x import post_tweet
-import sys
 
 if __name__ == "__main__":
     try:
@@ -96,6 +92,4 @@ if __name__ == "__main__":
         print("Error details:")
         print(e)
 
-    # Always exit cleanly
     sys.exit(0)
-

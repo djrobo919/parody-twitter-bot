@@ -46,9 +46,12 @@ Write ONE original tweet (max 280 characters).
 Return ONLY the tweet text.
 """
 
-    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+from openai import OpenAI, OpenAIError
 
-    for attempt in range(3):
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
+for attempt in range(3):
+    try:
         response = client.responses.create(
             model="gpt-4.1-mini",
             input=prompt
@@ -59,22 +62,14 @@ Return ONLY the tweet text.
         if is_safe(tweet):
             return tweet
 
-    return "Most problems persist because fixing them would upset someone who benefits from the status quo."
+    except OpenAIError as e:
+        print("OpenAI API error, using fallback tweet.")
+        print(e)
+        break  # stop retrying if quota is exceeded
 
-    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+# Always return something
+return "Most problems persist because fixing them would upset someone who benefits from the status quo."
 
-    for attempt in range(3):
-        response = client.responses.create(
-            model="gpt-4.1-mini",
-            input=prompt
-        )
-
-        tweet = response.output_text.strip()
-
-        if is_safe(tweet):
-            return tweet
-
-    return "Most problems persist because fixing them would upset someone who benefits from the status quo."
 
 from post_to_x import post_tweet
 import sys
